@@ -27,8 +27,9 @@ defmodule PhoenixHttp2Client do
   end
 
   def init([uri]) do
+    uri = URI.parse(uri)
     {:ok, pid} = connect(uri)
-    {:ok, %{pid: pid, ref: 1}}
+    {:ok, %{pid: pid, ref: 1, uri: uri}}
   end
 
   def handle_call({:send_json_data, data, stream_id, opts}, _reply, state) do
@@ -43,7 +44,8 @@ defmodule PhoenixHttp2Client do
   end
 
   def handle_call(:add_stream, _reply, state) do
-    {:ok, stream_id} = start_stream(state.pid, "/socket/http2")
+    path = "/socket/http2"
+    {:ok, stream_id} = start_stream(state.pid, path, state.uri)
     {:reply, {:ok, stream_id}, state}
   end
 
@@ -60,14 +62,14 @@ defmodule PhoenixHttp2Client do
     {:noreply, state}
   end
 
-  defp connect(uri) do
-    %{host: host, port: port} = URI.parse(uri)
-    init_args = {:client, :ssl, String.to_charlist(host), port, [], :chatterbox.settings(:client)}
+  defp connect(%{host: host, port: port, scheme: scheme}) do
+    transport = if scheme == "https", do: :ssl, else: :gen_tcp
+    init_args = {:client, transport, String.to_charlist(host), port, [], :chatterbox.settings(:client)}
     :gen_fsm.start_link(:h2_connection, init_args, [])
   end
 
-  defp start_stream(pid, path) do
-    headers = client_headers(path)
+  defp start_stream(pid, path, %{host: host, scheme: scheme}) do
+    headers = client_headers(path, host, scheme)
     stream_id = :h2_connection.new_stream(pid)
     :h2_connection.send_headers(pid, stream_id, headers)
     {:ok, stream_id}
@@ -77,12 +79,12 @@ defmodule PhoenixHttp2Client do
     :h2_connection.send_body(pid, stream_id, message, opts)
   end
 
-  defp client_headers(path) do
+  defp client_headers(path, host, scheme) do
     [
       {":method", "POST"},
-      {":scheme", "https"},
+      {":scheme", scheme},
       {":path", path},
-      {":authority", "localhost"},
+      {":authority", host},
     ]
   end
 end
