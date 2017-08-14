@@ -29,7 +29,7 @@ defmodule PhoenixHttp2Client.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:chatterbox, github: "tony612/chatterbox", branch: "my-fix"},
+      {:chatterbox, github: "VoiceLayer/chatterbox", branch: "my-fix"},
       {:poison, ">= 0.0.0"}
     ]
   end

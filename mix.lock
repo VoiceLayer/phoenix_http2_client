@@ -1,4 +1,4 @@
-%{"chatterbox": {:git, "https://github.com/tony612/chatterbox.git", "66079a34e61647d258329bd1db95c7609aa22b73", [branch: "my-fix"]},
+%{"chatterbox": {:git, "https://github.com/VoiceLayer/chatterbox.git", "66079a34e61647d258329bd1db95c7609aa22b73", [branch: "my-fix"]},
   "goldrush": {:git, "git://github.com/DeadZen/goldrush.git", "212299233c7e7eb63a97be2777e1c05ebaa58dbe", [tag: "0.1.8"]},
   "hpack": {:git, "git://github.com/joedevivo/hpack.git", "6b58b6231e9b6ab83096715120578976f72f4f7c", [branch: "master"]},
   "lager": {:git, "git://github.com/basho/lager.git", "1c42c3bffbab49b0f06c9a916b00ca4911ae6a2f", [tag: "2.2.3"]},
